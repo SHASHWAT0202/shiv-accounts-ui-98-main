@@ -21,9 +21,10 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
+import { ROLES, SIGNUP_AVAILABLE_ROLES, DEFAULT_SIGNUP_ROLE } from '@/lib/roles';
 
 // Define the user role type
-type UserRole = 'Admin' | 'InvoicingUser' | 'ContactMaster';
+type UserRole = typeof ROLES[keyof typeof ROLES];
 
 interface FormData {
   email: string;
@@ -40,7 +41,7 @@ export default function Login() {
     password: '',
     name: '',
     companyName: '',
-    role: 'Admin',
+    role: DEFAULT_SIGNUP_ROLE,
   });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -94,8 +95,9 @@ export default function Login() {
     
     try {
       // Use AuthContext; Supabase is used internally when configured
+      let dashboardRoute: string;
       if (isSignup) {
-        await signup({
+        dashboardRoute = await signup({
           email: formData.email,
           password: formData.password,
           name: formData.name,
@@ -107,13 +109,13 @@ export default function Login() {
           description: 'Please check your email to verify your account',
         });
       } else {
-        await login(formData.email, formData.password);
+        dashboardRoute = await login(formData.email, formData.password);
         toast({
           title: 'Welcome back!',
           description: 'Logged in successfully',
         });
       }
-      navigate('/dashboard');
+      navigate(dashboardRoute);
     } catch (err: unknown) {
       console.error('Authentication error:', err);
       
@@ -151,7 +153,7 @@ export default function Login() {
       password: '',
       name: '',
       companyName: '',
-      role: 'Admin',
+      role: DEFAULT_SIGNUP_ROLE,
     });
   };
 
@@ -239,9 +241,8 @@ export default function Login() {
                         <SelectValue placeholder="Select your role" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Admin">Admin (Business Owner)</SelectItem>
-                        <SelectItem value="InvoicingUser">Invoicing User</SelectItem>
-                        <SelectItem value="ContactMaster">Contact Master</SelectItem>
+                        <SelectItem value={ROLES.INVOICING_USER}>Invoicing User (Default)</SelectItem>
+                        <SelectItem value={ROLES.CONTACT_MASTER}>Contact Master</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

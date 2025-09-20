@@ -19,6 +19,12 @@ import {
   LazyPaymentGateway
 } from "./utils/performance";
 
+// Role-based dashboard components
+import SystemDashboard from "./pages/dashboards/SystemDashboard";
+import AdminDashboard from "./pages/dashboards/AdminDashboard";
+import InvoicingUserDashboard from "./pages/dashboards/InvoicingUserDashboard";
+import ContactMasterDashboard from "./pages/dashboards/ContactMasterDashboard";
+
 // Lazy load remaining components
 import { withLazyLoading } from "./utils/performance";
 
@@ -52,7 +58,12 @@ const App = () => (
                 </ProtectedRoute>
               }
             >
+              {/* Role-based dashboard routes */}
               <Route path="dashboard" element={<LazyDashboard />} />
+              <Route path="dashboard/system" element={<SystemDashboard />} />
+              <Route path="dashboard/admin" element={<AdminDashboard />} />
+              <Route path="dashboard/invoicer" element={<InvoicingUserDashboard />} />
+              <Route path="dashboard/contact" element={<ContactMasterDashboard />} />
               <Route path="reports" element={<LazyReports />} />
               <Route path="ledger" element={<LazyLedger />} />
               <Route path="payment-gateway" element={<LazyPaymentGateway />} />

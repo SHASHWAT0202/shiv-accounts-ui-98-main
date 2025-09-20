@@ -5,6 +5,10 @@ const crypto = require('crypto');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
+// Import authentication middleware and routes
+const { authenticateToken, requireRole } = require('./middleware/auth');
+const authRoutes = require('./routes/auth');
+
 const app = express();
 const port = process.env.PORT || 3001;
 
@@ -37,8 +41,11 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Payment server is running' });
 });
 
-// Create Razorpay order
-app.post('/api/payment/create-order', async (req, res) => {
+// Authentication routes
+app.use('/api/auth', authRoutes);
+
+// Create Razorpay order (requires authentication)
+app.post('/api/payment/create-order', authenticateToken, async (req, res) => {
   try {
     const { amount, currency = 'INR', receipt, notes } = req.body;
 
@@ -94,8 +101,8 @@ app.post('/api/payment/create-order', async (req, res) => {
   }
 });
 
-// Verify payment
-app.post('/api/payment/verify', async (req, res) => {
+// Verify payment (requires authentication)
+app.post('/api/payment/verify', authenticateToken, async (req, res) => {
   try {
     const { 
       razorpay_order_id, 
@@ -207,8 +214,8 @@ app.post('/api/payment/verify', async (req, res) => {
   }
 });
 
-// Get payment details
-app.get('/api/payment/:payment_id', (req, res) => {
+// Get payment details (requires authentication)
+app.get('/api/payment/:payment_id', authenticateToken, (req, res) => {
   try {
     const { payment_id } = req.params;
     
@@ -244,8 +251,8 @@ app.get('/api/payment/:payment_id', (req, res) => {
   }
 });
 
-// List all payments
-app.get('/api/payments', (req, res) => {
+// List all payments (requires authentication)
+app.get('/api/payments', authenticateToken, (req, res) => {
   try {
     const { invoice_id, contact_id, status, limit = 50 } = req.query;
     
