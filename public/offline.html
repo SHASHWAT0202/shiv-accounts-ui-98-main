@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Shiv Accounts</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .offline-container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .offline-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .retry-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .retry-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .features {
+            margin-top: 3rem;
+            text-align: left;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 1rem;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .offline-icon { width: 80px; height: 80px; font-size: 2rem; }
+            .features { text-align: center; }
+            .feature { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">📱</div>
+        <h1>You're Offline</h1>
+        <p>
+            It looks like you've lost your internet connection. Don't worry - you can still access 
+            some features of Shiv Accounts that have been cached on your device.
+        </p>
+        
+        <button class="retry-button" onclick="retryConnection()">
+            Try Again
+        </button>
+        
+        <div class="features">
+            <div class="feature">
+                <span class="feature-icon">📊</span>
+                <span>View cached dashboard data</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">📋</span>
+                <span>Browse saved contacts and products</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">💾</span>
+                <span>Create drafts (sync when online)</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function retryConnection() {
+            // Check if we're back online
+            if (navigator.onLine) {
+                window.location.href = '/';
+            } else {
+                // Still offline, provide feedback
+                const button = document.querySelector('.retry-button');
+                const originalText = button.textContent;
+                button.textContent = 'Still Offline...';
+                button.style.background = 'rgba(255, 0, 0, 0.2)';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = 'rgba(255, 255, 255, 0.2)';
+                }, 2000);
+            }
+        }
+        
+        // Listen for online events
+        window.addEventListener('online', () => {
+            const button = document.querySelector('.retry-button');
+            button.textContent = 'Back Online! Click to Continue';
+            button.style.background = 'rgba(0, 255, 0, 0.3)';
+            button.style.animation = 'pulse 1s infinite';
+        });
+        
+        // Add pulse animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
