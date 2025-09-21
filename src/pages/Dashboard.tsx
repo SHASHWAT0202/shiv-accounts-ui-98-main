@@ -23,7 +23,10 @@ import { TrendingUp, TrendingDown, Users, Package, DollarSign, AlertCircle, Shop
 import { useAppStore } from '@/store/AppStore';
 import { Button } from '@/components/ui/button';
 
-import { useMemo, useCallback, useState } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
+import { getDashboardRoute } from '@/lib/roles';
 
 // Performance optimizations for large datasets
 const ITEMS_PER_PAGE = 10;
@@ -31,7 +34,19 @@ const MAX_CHART_DATA_POINTS = 12;
 
 export default function Dashboard() {
   const { state } = useAppStore();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+
+  // Redirect to role-specific dashboard
+  useEffect(() => {
+    if (user) {
+      const roleDashboard = getDashboardRoute(user.role);
+      if (roleDashboard !== '/dashboard') {
+        navigate(roleDashboard, { replace: true });
+      }
+    }
+  }, [user, navigate]);
   
   // Optimized metrics calculation with better caching
   const metrics = useMemo(() => {
